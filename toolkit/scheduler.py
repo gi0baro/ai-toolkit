@@ -35,6 +35,12 @@ def get_lr_scheduler(
         return torch.optim.lr_scheduler.LinearLR(
             optimizer, **kwargs
         )
+    elif name == "polynomial":
+        if 'power' not in kwargs:
+            kwargs['power'] = 0.1
+        return torch.optim.lr_scheduler.PolynomialLR(
+                optimizer, **kwargs
+        )
     elif name == 'constant_with_warmup':
         # see if num_warmup_steps is in kwargs
         if 'num_warmup_steps' not in kwargs:
