@@ -196,7 +196,7 @@ class CustomIPAttentionProcessor(IPAttnProcessor2_0):
             # the output of sdp = (batch, num_heads, seq_len, head_dim)
             # TODO: add support for attn.scale when we move to Torch 2.1
             ip_hidden_states = F.scaled_dot_product_attention(
-                query, ip_key, ip_value, attn_mask=None, dropout_p=0.0, is_causal=False
+                query, ip_key, ip_value, attn_mask=attention_mask, dropout_p=0.0, is_causal=False
             )
 
             ip_hidden_states = ip_hidden_states.transpose(1, 2).reshape(batch_size, -1, attn.heads * head_dim)
@@ -321,7 +321,7 @@ class CustomIPFluxAttnProcessor2_0(torch.nn.Module):
             query = apply_rotary_emb(query, image_rotary_emb)
             key = apply_rotary_emb(key, image_rotary_emb)
 
-        hidden_states = F.scaled_dot_product_attention(query, key, value, dropout_p=0.0, is_causal=False)
+        hidden_states = F.scaled_dot_product_attention(query, key, value, attention_mask=attention_mask, dropout_p=0.0, is_causal=False)
         hidden_states = hidden_states.transpose(1, 2).reshape(batch_size, -1, attn.heads * head_dim)
         hidden_states = hidden_states.to(query.dtype)
 
@@ -353,7 +353,7 @@ class CustomIPFluxAttnProcessor2_0(torch.nn.Module):
             ip_value = ip_value.view(batch_size, -1, attn.heads, head_dim).transpose(1, 2)
 
             ip_hidden_states = F.scaled_dot_product_attention(
-                query, ip_key, ip_value, attn_mask=None, dropout_p=0.0, is_causal=False
+                query, ip_key, ip_value, attn_mask=attention_mask, dropout_p=0.0, is_causal=False
             )
 
             ip_hidden_states = ip_hidden_states.transpose(1, 2).reshape(batch_size, -1, attn.heads * head_dim)
